@@ -21,6 +21,7 @@
     "axios": "^0.15.3",
     "body-parser": "^1.16.1",
     "cors": "^2.8.1",
+    "csvtojson": "^1.1.6",
     "dotenv": "^4.0.0",
     "express": "^4.14.1",
     "google-finance": "^0.1.9",
@@ -29,6 +30,7 @@
     "mongodb": "^2.2.24",
     "mongoose": "^4.8.3",
     "node-schedule": "^1.2.0",
+    "request": "^2.81.0",
     "talib": "^1.0.2",
     "technicalindicators": "^0.2.24",
     "yahoo-finance": "^0.2.16"

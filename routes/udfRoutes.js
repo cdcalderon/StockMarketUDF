@@ -21,10 +21,11 @@ setInterval(function() {
 }, quandlCacheCleanupTime);
 
 
-let routes = function(){
+let routes = function(Stock){
     let udfRouter = express.Router();
 
     let udfController = require('../controllers/udfController')(
+        Stock,
         axios,
         moment,
         _,
@@ -35,26 +36,11 @@ let routes = function(){
     udfRouter.route('/history')
         .get(udfController.getHistory);
 
-    udfRouter.route('/config')
-        .get(udfController.getConfig);
-
-    udfRouter.route('/marksgaps')
-        .get(udfController.getMarksGaps);
-
-    udfRouter.route('/marks')
-        .get(udfController.getMarks);
-
-    udfRouter.route('/signals')
-        .get(udfController.getSignals);
-
-    udfRouter.route('/marksgreenarrows')
-        .get(udfController.getMarksGreenArrows);
-
     udfRouter.route('/symbols')
         .get(udfController.getSymbols);
 
-    udfRouter.route('/timescale_marks')
-        .get(udfController.getTimescaleMarks);
+    udfRouter.route('/updateStocks')
+        .get(udfController.updateStockInformation);
 
     return udfRouter;
 }
