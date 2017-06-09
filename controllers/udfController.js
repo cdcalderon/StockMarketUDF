@@ -54,53 +54,58 @@ let udfController = (
     };
 
     let populateStocks = (stockInfoUrl, exchange) => {
-            csv()
-                .fromStream(request.get(stockInfoUrl))
-                .on('csv', (csvRow) => {
-                    let symbol = csvRow[0];
-
-                    if(symbol.toLowerCase() == 'more'){
-                        console.log(symbol);
-                    }
-                    Stock.find({symbol: symbol})
-                        .count()
-                        .then((count) => {
-                            console.log(`${symbol} Stocks: ${count}`);
-                            if(count === 0){
-
-                                //insert
-                                let stock = new Stock({
-                                    symbol:symbol,
-                                    name: csvRow[1],
-                                    lastSale: csvRow[2],
-                                    marketCap: csvRow[3],
-                                    ipoYear: csvRow[4],
-                                    sector: csvRow[5],
-                                    industry: csvRow[6],
-                                    summaryQuoteUrl: csvRow[7],
-                                    exchange: exchange
-                                });
-
-                                stock.save().then((doc) => {
-                                    console.log('success saving.. : ', doc);
-                                }, (e) => {
-                                    console.log('error saving.. : ', e);
-                                });
-
-                            } else {
-                                console.log(`${symbol} already in DB`);
-                            }
-                        });
-
-                })
-                .on('done',(error)=>{
-                    if(error != null) {
-                        Promise.reject(error);
-                    }
-                    Promise.resolve('OK');
-
-                });
+        return new Promise((resolve, reject) => {
+            saveStocks(stockInfoUrl, exchange, resolve, reject)
+        });
     };
+
+    let saveStocks = (stockInfoUrl, exchange, resolve, reject) =>{
+        csv()
+            .fromStream(request.get(stockInfoUrl))
+            .on('csv', (csvRow) => {
+                let symbol = csvRow[0] != null ? csvRow[0].trim(): 'N/A';
+
+                if(symbol.toLowerCase() == 'more'){
+                    console.log(symbol);
+                }
+                Stock.find({symbol: symbol})
+                    .count()
+                    .then((count) => {
+                        console.log(`${symbol} Stocks: ${count}`);
+                        if(count === 0){
+
+                            //insert
+                            let stock = new Stock({
+                                symbol:symbol,
+                                name: csvRow[1],
+                                lastSale: csvRow[2],
+                                marketCap: csvRow[3],
+                                ipoYear: csvRow[4],
+                                sector: csvRow[5],
+                                industry: csvRow[6],
+                                summaryQuoteUrl: csvRow[7],
+                                exchange: exchange
+                            });
+
+                            stock.save().then((doc) => {
+                                console.log('success saving.. : ', doc);
+                            }, (e) => {
+                                console.log('error saving.. : ', e);
+                            });
+
+                        } else {
+                            console.log(`${symbol} already in DB`);
+                        }
+                    });
+
+            })
+            .on('done',(error)=>{
+                if(error != null) {
+                    reject(error);
+                }
+                resolve('OK');
+            });
+    }
 
 
     function parseDate(input) {
