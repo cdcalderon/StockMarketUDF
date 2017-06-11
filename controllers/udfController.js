@@ -207,7 +207,6 @@ let udfController = (
 
     };
 
-
     return {
         getHistory: getHistory,
         getSymbols: getSymbols,
