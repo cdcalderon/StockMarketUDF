@@ -206,7 +206,7 @@ let udfController = (
                     exchange: exchange
                 };
 
-                axios.post('${herokuUDFBaseUrl}/api/udf/updatestocksheroku' , {
+                axios.post(`${herokuUDFBaseUrl}/api/udf/updatestocksheroku` , {
                     params: stock
                 }).then(function(data) {
                     res.send(data.data)
