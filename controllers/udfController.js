@@ -108,17 +108,19 @@ let udfController = (
                 });
                 let stockChunks = _.chunk(stocksFormated, 100);
 
-                for(let s of stockChunks) {
-                    setTimeout(() => {
-                        axios.post(`${herokuUDFBaseUrl}/api/udf/updateStocksFromCollectionHeroku` , {
-                            params: s
-                        }).then(function(data) {
-                            console.log(data.data)
-                        }).catch(function(err){
-                            console.log(err)
-                        });
-                    },2000);
-                }
+                // for(let s of stockChunks) {
+                //
+                // }
+                let index = 0;
+                setTimeout(() => {
+                    axios.post(`${herokuUDFBaseUrl}/api/udf/updateStocksFromCollectionHeroku` , {
+                        params: stockChunks[index++]
+                    }).then(function(data) {
+                        console.log(data.data)
+                    }).catch(function(err){
+                        console.log(err)
+                    });
+                },2000);
             });
 
         // Promise.all([
@@ -148,13 +150,16 @@ let udfController = (
                 exchange: stock.exchange
             })
         });
+        console.log(`Stokcs############ : ${stocks}`);
 
         let index = 0;
+        console.log(`index : ${index}`);
         for (let stock of stocks ) {
             Stock.find({symbol: stock.symbol})
                 .count()
                 .then((count) => {
                 index++;
+                    console.log(`index : ${index}`);
                     console.log(`${stock.symbol} Stocks: ${count}`);
                     if(count === 0){
 
@@ -167,7 +172,8 @@ let udfController = (
                     } else {
                         console.log(`${stock.symbol} already in DB`);
                     }
-                    if(index === stocks.length){
+
+                    if(index === stocks.length-1){
                         res.status(200).send('ok');
                     }
                 });
