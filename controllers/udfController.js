@@ -36,7 +36,32 @@ let udfController = (
     };
 
     let getSymbols = (req, res) => {
+        let symbol = req.query.symbol;
+        Stock.findOne({symbol: symbol})
+            .then((symbol) => {
+                let responseSymbol =
+                    {
+                        name: symbol.symbol,
+                        'exchange-traded': symbol.exchange,
+                        'exchange-listed':symbol.exchange,
+                        timezone:"America/New_York",
+                        minmov:1,
+                        minmov2:0,
+                        pricescale:10,
+                        pointvalue:1,
+                        session:"0930-1630",
+                        has_intraday:false,
+                        has_no_volume:false,
+                        ticker: symbol.symbol,
+                        description:symbol.name,
+                        type:"stock",
+                        supported_resolutions:[
+                            "D"
+                        ]
+                    }
+                res.send(responseSymbol);
 
+            });
 
     };
 
