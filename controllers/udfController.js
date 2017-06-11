@@ -93,25 +93,32 @@ let udfController = (
             .then((stocks) => {
                 console.log(stocks);
 
-                                axios.post(`${herokuUDFBaseUrl}/api/udf/updateStocksFromCollectionHeroku` , {
-                                    params: stocks.map((stock) => {
-                                        return {
-                                            symbol:stock._doc.symbol,
-                                            name: stock._doc.name,
-                                            lastSale: stock._doc.lastSale,
-                                            marketCap: stock._doc.marketCap,
-                                            ipoYear: stock._doc.ipoYear,
-                                            sector: stock._doc.sector,
-                                            industry: stock._doc.industry,
-                                            summaryQuoteUrl: stock._doc.summaryQuoteUrl,
-                                            exchange: stock._doc.exchange
-                                        }
-                                    })
-                                }).then(function(data) {
-                                    console.log(data.data)
-                                }).catch(function(err){
-                                    console.log(err)
-                                });
+                let stocksFormated = stocks.map((stock) => {
+                    return {
+                        symbol:stock._doc.symbol,
+                        name: stock._doc.name,
+                        lastSale: stock._doc.lastSale,
+                        marketCap: stock._doc.marketCap,
+                        ipoYear: stock._doc.ipoYear,
+                        sector: stock._doc.sector,
+                        industry: stock._doc.industry,
+                        summaryQuoteUrl: stock._doc.summaryQuoteUrl,
+                        exchange: stock._doc.exchange
+                    }
+                });
+                let stockChunks = _.chunk(stocksFormated, 700);
+
+                for(let s of stockChunks) {
+                    setTimeout(() => {
+                        axios.post(`${herokuUDFBaseUrl}/api/udf/updateStocksFromCollectionHeroku` , {
+                            params: s
+                        }).then(function(data) {
+                            console.log(data.data)
+                        }).catch(function(err){
+                            console.log(err)
+                        });
+                    },2000);
+                }
             });
 
         // Promise.all([
