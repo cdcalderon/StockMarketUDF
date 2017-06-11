@@ -17,52 +17,56 @@ let udfController = (
     //Implement new yahoo UDP quotes service
     //https://github.com/tradingview/yahoo_datafeed/blob/master/yahoo.js
      let getHistory = (req, res) => {
-        let symbol = req.query.symbol;
-        let resolution = req.query.resolution;
 
-         let startDateTimestamp = moment.unix(req.query.from).format("MM/DD/YYYY");
-         let endDateTimestamp = moment.unix(req.query.to).format("MM/DD/YYYY");
+             let symbol = req.query.symbol;
+             let resolution = req.query.resolution;
 
-         quotes.getHistoricalQuotes(symbol, startDateTimestamp, endDateTimestamp)
-             .then((fullQuotes) => {
+             let startDateTimestamp = moment.unix(req.query.from).format("MM/DD/YYYY");
+             let endDateTimestamp = moment.unix(req.query.to).format("MM/DD/YYYY");
+         if(symbol != null && startDateTimestamp != null && endDateTimestamp != null) {
+             quotes.getHistoricalQuotes(symbol, startDateTimestamp, endDateTimestamp)
+                 .then((fullQuotes) => {
 
-                 let quotes = convertYahooHistoryToUDFFormat(fullQuotes);
-                 res.send(quotes);
-             })
-             .catch((error) => {
-                 console.log(error);
-             });
-
+                     let quotes = convertYahooHistoryToUDFFormat(fullQuotes);
+                     res.send(quotes);
+                 })
+                 .catch((error) => {
+                     console.log(error);
+                 });
+         }
     };
 
     let getSymbols = (req, res) => {
         let symbol = req.query.symbol;
-        Stock.findOne({symbol: symbol})
-            .then((symbol) => {
-                let responseSymbol =
-                    {
-                        name: symbol.symbol,
-                        'exchange-traded': symbol.exchange,
-                        'exchange-listed':symbol.exchange,
-                        timezone:"America/New_York",
-                        minmov:1,
-                        minmov2:0,
-                        pricescale:10,
-                        pointvalue:1,
-                        session:"0930-1630",
-                        has_intraday:false,
-                        has_no_volume:false,
-                        ticker: symbol.symbol,
-                        description:symbol.name,
-                        type:"stock",
-                        supported_resolutions:[
-                            "D"
-                        ]
+        if(symbol != null) {
+            Stock.findOne({symbol: symbol})
+                .then((symbol) => {
+                    if (symbol != null) {
+                        let responseSymbol =
+                            {
+                                name: symbol.symbol,
+                                'exchange-traded': symbol.exchange,
+                                'exchange-listed': symbol.exchange,
+                                timezone: "America/New_York",
+                                minmov: 1,
+                                minmov2: 0,
+                                pricescale: 10,
+                                pointvalue: 1,
+                                session: "0930-1630",
+                                has_intraday: false,
+                                has_no_volume: false,
+                                ticker: symbol.symbol,
+                                description: symbol.name,
+                                type: "stock",
+                                supported_resolutions: [
+                                    "D"
+                                ]
+                            };
+                        res.send(responseSymbol);
                     }
-                res.send(responseSymbol);
-
-            });
-
+                    res.send('symbol not found');
+                });
+        }
     };
 
     let updateStockInformation = (req, res) => {
