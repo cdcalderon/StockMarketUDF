@@ -88,48 +88,92 @@ let udfController = (
     };
 
     let updateStockInformationHeroku = (req, res) => {
-        Promise.all([
-            populateStocksHeroku(nasdaqStocksUrl, 'NasdaqNM'),
-            populateStocksHeroku(nyseStocksUrl, 'NYSE'),
-            populateStocksHeroku(amexStocksUrl, 'AMEX')
-            ]
-        ).then((data) => {
-            res.status(200).send('ok');
-        }).catch((e) => {
-            console.log(e);
-            res.status(500).send('error');
-        });
+
+        Stock.find()
+            .then((stocks) => {
+                console.log(stocks);
+
+                                axios.post(`${herokuUDFBaseUrl}/api/udf/updateStocksFromCollectionHeroku` , {
+                                    params: stocks.map((stock) => {
+                                        return {
+                                            symbol:stock._doc.symbol,
+                                            name: stock._doc.name,
+                                            lastSale: stock._doc.lastSale,
+                                            marketCap: stock._doc.marketCap,
+                                            ipoYear: stock._doc.ipoYear,
+                                            sector: stock._doc.sector,
+                                            industry: stock._doc.industry,
+                                            summaryQuoteUrl: stock._doc.summaryQuoteUrl,
+                                            exchange: stock._doc.exchange
+                                        }
+                                    })
+                                }).then(function(data) {
+                                    console.log(data.data)
+                                }).catch(function(err){
+                                    console.log(err)
+                                });
+            });
+
+        // Promise.all([
+        //     populateStocksHeroku(nasdaqStocksUrl, 'NasdaqNM'),
+        //     populateStocksHeroku(nyseStocksUrl, 'NYSE'),
+        //     populateStocksHeroku(amexStocksUrl, 'AMEX')
+        //     ]
+        // ).then((data) => {
+        //     res.status(200).send('ok');
+        // }).catch((e) => {
+        //     console.log(e);
+        //     res.status(500).send('error');
+        // });
     };
 
-    let updateStockSingleHeroku = (req, res) => {
-        let stock = new Stock({
-            symbol:req.body.params.symbol,
-            name: req.body.params.name,
-            lastSale: req.body.params.lastSale,
-            marketCap: req.body.params.marketCap,
-            ipoYear: req.body.params.ipoYear,
-            sector: req.body.params.sector,
-            industry: req.body.params.industry,
-            summaryQuoteUrl: req.body.params.summaryQuoteUrl,
-            exchange: req.body.params.exchange
+    let updateStocksHeroku = (req, res) => {
+        let stocks = req.body.params.map((stock) => {
+            return new Stock({
+                symbol:stock.symbol,
+                name: stock.name,
+                lastSale: stock.lastSale,
+                marketCap: stock.marketCap,
+                ipoYear: stock.ipoYear,
+                sector: stock.sector,
+                industry: stock.industry,
+                summaryQuoteUrl: stock.summaryQuoteUrl,
+                exchange: stock.exchange
+            })
         });
 
-        Stock.find({symbol: stock.symbol})
-            .count()
-            .then((count) => {
-                console.log(`${stock.symbol} Stocks: ${count}`);
-                if(count === 0){
+        for (let stock of stocks ) {
+            Stock.find({symbol: stock.symbol})
+                .count()
+                .then((count) => {
+                    console.log(`${stock.symbol} Stocks: ${count}`);
+                    if(count === 0){
 
-                    stock.save().then((doc) => {
-                        console.log('success saving.. : ', doc);
-                    }, (e) => {
-                        console.log('error saving.. : ', e);
-                    });
+                        stock.save().then((doc) => {
+                            console.log('success saving.. : ', doc);
+                        }, (e) => {
+                            console.log('error saving.. : ', e);
+                        });
 
-                } else {
-                    console.log(`${stock.symbol} already in DB`);
-                }
-            });
+                    } else {
+                        console.log(`${stock.symbol} already in DB`);
+                    }
+                });
+            res.status(200).send('ok');
+        }
+        // let stock = new Stock({
+        //     symbol:req.body.params.symbol,
+        //     name: req.body.params.name,
+        //     lastSale: req.body.params.lastSale,
+        //     marketCap: req.body.params.marketCap,
+        //     ipoYear: req.body.params.ipoYear,
+        //     sector: req.body.params.sector,
+        //     industry: req.body.params.industry,
+        //     summaryQuoteUrl: req.body.params.summaryQuoteUrl,
+        //     exchange: req.body.params.exchange
+        // });
+
+
 
 
     };
@@ -197,48 +241,47 @@ let udfController = (
     }
 
     let saveStocksToHeroku = (stockInfoUrl, exchange, resolve, reject) =>{
-        csv()
-            .fromStream(request.get(stockInfoUrl))
-            .on('csv', (csvRow) => {
-
-                console.log(csvRow);
-                let symbol = csvRow[0] != null ? csvRow[0].trim(): 'N/A';
-
-                if(symbol.toLowerCase() === 'more'){
-                    console.log(symbol);
-                }
-
-                let stock = {
-                    symbol:symbol,
-                    name: csvRow[1],
-                    lastSale: csvRow[2],
-                    marketCap: csvRow[3],
-                    ipoYear: csvRow[4],
-                    sector: csvRow[5],
-                    industry: csvRow[6],
-                    summaryQuoteUrl: csvRow[7],
-                    exchange: exchange
-                };
-
-                setTimeout(() => {
-                    axios.post(`${herokuUDFBaseUrl}/api/udf/updatestocksingleheroku` , {
-                        params: stock
-                    }).then(function(data) {
-                        console.log(data.data)
-                    }).catch(function(err){
-                        console.log(err)
-                    });
-                },200);
-
-
-            })
-            .on('done',(error)=>{
-                if(error != null) {
-                    console.log(error);
-                    reject(error);
-                }
-                resolve('OK');
-            });
+        // csv()
+        //     .fromStream(request.get(stockInfoUrl))
+        //     .on('csv', (csvRow) => {
+        //
+        //         console.log(csvRow);
+        //         let symbol = csvRow[0] != null ? csvRow[0].trim(): 'N/A';
+        //
+        //         if(symbol.toLowerCase() === 'more'){
+        //             console.log(symbol);
+        //         }
+        //
+        //         let stock = {
+        //             symbol:symbol,
+        //             name: csvRow[1],
+        //             lastSale: csvRow[2],
+        //             marketCap: csvRow[3],
+        //             ipoYear: csvRow[4],
+        //             sector: csvRow[5],
+        //             industry: csvRow[6],
+        //             summaryQuoteUrl: csvRow[7],
+        //             exchange: exchange
+        //         };
+        //
+        //         setTimeout(() => {
+        //             axios.post(`${herokuUDFBaseUrl}/api/udf/updatestocksingleheroku` , {
+        //                 params: stock
+        //             }).then(function(data) {
+        //                 console.log(data.data)
+        //             }).catch(function(err){
+        //                 console.log(err)
+        //             });
+        //         },1000);
+        //
+        //     })
+        //     .on('done',(error)=>{
+        //         if(error != null) {
+        //             console.log(error);
+        //             reject(error);
+        //         }
+        //         resolve('OK');
+        //     });
     }
 
 
@@ -315,7 +358,7 @@ let udfController = (
         getSymbols,
         updateStockInformation,
         updateStockInformationHeroku,
-        updateStockSingleHeroku
+        updateStocksHeroku
     }
 
 };
