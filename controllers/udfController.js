@@ -68,6 +68,8 @@ let udfController = (
                                 ]
                             };
                         res.send(responseSymbol);
+                    } else {
+                        res.status(404).send('resource not found');
                     }
                 });
     };
@@ -112,11 +114,22 @@ let udfController = (
             exchange: req.body.params.exchange
         });
 
-        stock.save().then((doc) => {
-            console.log('success saving.. : ', doc);
-        }, (e) => {
-            console.log('error saving.. : ', e);
-        });
+        Stock.find({symbol: stock.symbol})
+            .count()
+            .then((count) => {
+                console.log(`${stock.symbol} Stocks: ${count}`);
+                if(count === 0){
+
+                    stock.save().then((doc) => {
+                        console.log('success saving.. : ', doc);
+                    }, (e) => {
+                        console.log('error saving.. : ', e);
+                    });
+
+                } else {
+                    console.log(`${stock.symbol} already in DB`);
+                }
+            });
 
 
     };
@@ -207,13 +220,16 @@ let udfController = (
                     exchange: exchange
                 };
 
-                axios.post(`${herokuUDFBaseUrl}/api/udf/updatestocksingleheroku` , {
-                    params: stock
-                }).then(function(data) {
-                    console.log(data.data)
-                }).catch(function(err){
-                    console.log(err)
-                });
+                setTimeout(() => {
+                    axios.post(`${herokuUDFBaseUrl}/api/udf/updatestocksingleheroku` , {
+                        params: stock
+                    }).then(function(data) {
+                        console.log(data.data)
+                    }).catch(function(err){
+                        console.log(err)
+                    });
+                },200);
+
 
             })
             .on('done',(error)=>{
