@@ -95,20 +95,21 @@ let udfController = (
             res.status(200).send('ok');
         }).catch((e) => {
             console.log(e);
+            res.status(500).send('error');
         });
     };
 
     let updateStockSingleHeroku = (req, res) => {
         let stock = new Stock({
-            symbol:req.query.symbol,
-            name: req.query.name,
-            lastSale: req.query.lastSale,
-            marketCap: req.query.marketCap,
-            ipoYear: req.query.ipoYear,
-            sector: req.query.sector,
-            industry: req.query.industry,
-            summaryQuoteUrl: req.query.summaryQuoteUrl,
-            exchange: req.query.exchange
+            symbol:req.body.params.symbol,
+            name: req.body.params.name,
+            lastSale: req.body.params.lastSale,
+            marketCap: req.body.params.marketCap,
+            ipoYear: req.body.params.ipoYear,
+            sector: req.body.params.sector,
+            industry: req.body.params.industry,
+            summaryQuoteUrl: req.body.params.summaryQuoteUrl,
+            exchange: req.body.params.exchange
         });
 
         stock.save().then((doc) => {
@@ -206,12 +207,12 @@ let udfController = (
                     exchange: exchange
                 };
 
-                axios.post(`${herokuUDFBaseUrl}/api/udf/updatestocksheroku` , {
+                axios.post(`${herokuUDFBaseUrl}/api/udf/updatestocksingleheroku` , {
                     params: stock
                 }).then(function(data) {
-                    res.send(data.data)
+                    console.log(data.data)
                 }).catch(function(err){
-                    res.send(err)
+                    console.log(err)
                 });
 
             })
