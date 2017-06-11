@@ -10,7 +10,11 @@ const {Stock} = require('../models/stock');
 
 
 app.use(cors());
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({
+    parameterLimit: 100000,
+    limit: '80mb',
+    extended: true
+}));
 app.use(bodyParser.json());
 
 const udfRouter = require('../routes/udfRoutes')(Stock);
