@@ -38,7 +38,10 @@ let udfController = (
 
     let getSymbols = (req, res) => {
         let symbol = req.query.symbol;
-        if(symbol != null) {
+        let symbolArr = symbol.split(':');
+        if(symbolArr.length === 2) {
+            symbol = symbolArr[1];
+        }
             Stock.findOne({symbol: symbol})
                 .then((symbol) => {
                     if (symbol != null) {
@@ -64,9 +67,8 @@ let udfController = (
                             };
                         res.send(responseSymbol);
                     }
-                    res.send('symbol not found');
                 });
-        }
+
     };
 
     let updateStockInformation = (req, res) => {
