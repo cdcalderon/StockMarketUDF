@@ -106,7 +106,7 @@ let udfController = (
                         exchange: stock._doc.exchange
                     }
                 });
-                let stockChunks = _.chunk(stocksFormated, 700);
+                let stockChunks = _.chunk(stocksFormated, 100);
 
                 for(let s of stockChunks) {
                     setTimeout(() => {
@@ -149,10 +149,12 @@ let udfController = (
             })
         });
 
+        let index = 0;
         for (let stock of stocks ) {
             Stock.find({symbol: stock.symbol})
                 .count()
                 .then((count) => {
+                index++;
                     console.log(`${stock.symbol} Stocks: ${count}`);
                     if(count === 0){
 
@@ -165,9 +167,13 @@ let udfController = (
                     } else {
                         console.log(`${stock.symbol} already in DB`);
                     }
+                    if(index === stocks.length){
+                        res.status(200).send('ok');
+                    }
                 });
-            res.status(200).send('ok');
+
         }
+
         // let stock = new Stock({
         //     symbol:req.body.params.symbol,
         //     name: req.body.params.name,
