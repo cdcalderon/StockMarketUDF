@@ -42,6 +42,14 @@ let routes = function(Stock){
     udfRouter.route('/updateStocks')
         .get(udfController.updateStockInformation);
 
+    udfRouter.route('/updateStocksHeroku')
+        .get(udfController.updateStockInformationHeroku);
+
+    udfRouter.route('/updatestocksingleheroku')
+        .get(udfController.updateStockSingleHeroku);
+
+
+
     return udfRouter;
 }
 
