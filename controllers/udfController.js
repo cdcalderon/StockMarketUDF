@@ -108,38 +108,33 @@ let udfController = (
                 });
                 let stockChunks = _.chunk(stocksFormated, 100);
 
-                // for(let s of stockChunks) {
-                //
-                // }
-                let index = 0;
-                setTimeout(() => {
+                let genStockChunks = genStocks(stockChunks);
+
+                let chunk = genStockChunks.next();
+
+                let intervalId = setInterval(() => {
                     axios.post(`${herokuUDFBaseUrl}/api/udf/updateStocksFromCollectionHeroku` , {
-                        params: stockChunks[index++]
+                        params: chunk.value
                     }).then(function(data) {
-                        console.log(data.data)
+                        console.log( `success ${data.data}`)
                     }).catch(function(err){
                         console.log(err)
                     });
-                },2000);
+                    chunk = genStockChunks.next();
+                    if(chunk.done === true){
+                        clearInterval(intervalId);
+                        res.status(200).send('ok');
+                    }
+                },1000);
             });
-
-        // Promise.all([
-        //     populateStocksHeroku(nasdaqStocksUrl, 'NasdaqNM'),
-        //     populateStocksHeroku(nyseStocksUrl, 'NYSE'),
-        //     populateStocksHeroku(amexStocksUrl, 'AMEX')
-        //     ]
-        // ).then((data) => {
-        //     res.status(200).send('ok');
-        // }).catch((e) => {
-        //     console.log(e);
-        //     res.status(500).send('error');
-        // });
     };
+
+
 
     let updateStocksHeroku = (req, res) => {
         let stocks = req.body.params.map((stock) => {
             return new Stock({
-                symbol:stock.symbol,
+                symbol:stock.symbol.trim(),
                 name: stock.name,
                 lastSale: stock.lastSale,
                 marketCap: stock.marketCap,
@@ -179,33 +174,11 @@ let udfController = (
                 });
 
         }
-
-        // let stock = new Stock({
-        //     symbol:req.body.params.symbol,
-        //     name: req.body.params.name,
-        //     lastSale: req.body.params.lastSale,
-        //     marketCap: req.body.params.marketCap,
-        //     ipoYear: req.body.params.ipoYear,
-        //     sector: req.body.params.sector,
-        //     industry: req.body.params.industry,
-        //     summaryQuoteUrl: req.body.params.summaryQuoteUrl,
-        //     exchange: req.body.params.exchange
-        // });
-
-
-
-
     };
 
     let populateStocks = (stockInfoUrl, exchange) => {
         return new Promise((resolve, reject) => {
             saveStocks(stockInfoUrl, exchange, resolve, reject)
-        });
-    };
-
-    let populateStocksHeroku = (stockInfoUrl, exchange) => {
-        return new Promise((resolve, reject) => {
-            saveStocksToHeroku(stockInfoUrl, exchange, resolve, reject)
         });
     };
 
@@ -257,59 +230,14 @@ let udfController = (
                 }
                 resolve('OK');
             });
-    }
+    };
 
-    let saveStocksToHeroku = (stockInfoUrl, exchange, resolve, reject) =>{
-        // csv()
-        //     .fromStream(request.get(stockInfoUrl))
-        //     .on('csv', (csvRow) => {
-        //
-        //         console.log(csvRow);
-        //         let symbol = csvRow[0] != null ? csvRow[0].trim(): 'N/A';
-        //
-        //         if(symbol.toLowerCase() === 'more'){
-        //             console.log(symbol);
-        //         }
-        //
-        //         let stock = {
-        //             symbol:symbol,
-        //             name: csvRow[1],
-        //             lastSale: csvRow[2],
-        //             marketCap: csvRow[3],
-        //             ipoYear: csvRow[4],
-        //             sector: csvRow[5],
-        //             industry: csvRow[6],
-        //             summaryQuoteUrl: csvRow[7],
-        //             exchange: exchange
-        //         };
-        //
-        //         setTimeout(() => {
-        //             axios.post(`${herokuUDFBaseUrl}/api/udf/updatestocksingleheroku` , {
-        //                 params: stock
-        //             }).then(function(data) {
-        //                 console.log(data.data)
-        //             }).catch(function(err){
-        //                 console.log(err)
-        //             });
-        //         },1000);
-        //
-        //     })
-        //     .on('done',(error)=>{
-        //         if(error != null) {
-        //             console.log(error);
-        //             reject(error);
-        //         }
-        //         resolve('OK');
-        //     });
-    }
-
-
-    function parseDate(input) {
-        var parts = input.split('-');
+    let parseDate = (input) => {
+        let parts = input.split('-');
         return Date.UTC(parts[0], parts[1]-1, parts[2]);
-    }
+    };
 
-    function convertYahooHistoryToUDFFormat(data) {
+    let convertYahooHistoryToUDFFormat = (data) => {
         return {
             t: _.pluck(data, 'date').map((date) => {
                 return parseDate(moment(date).format("YYYY-MM-DD")) / 1000;
@@ -321,6 +249,12 @@ let udfController = (
             v: _.pluck(data, 'volume'),
             s: 'ok'
         };
+    };
+
+    function *genStocks(array) {
+        for (let i = 0; i < array.length; i++) {
+            yield array[i];
+        }
     }
 
     function requestHistoryFromQuandl(symbol, startDateTimestamp, endDateTimestamp, response) {
