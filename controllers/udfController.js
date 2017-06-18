@@ -76,6 +76,23 @@ let udfController = (
                 });
     };
 
+    let getAllSymbols = (req, res) => {
+        Stock.find()
+            .then((symbols) => {
+                if (symbols != null) {
+                    let responseSymbols = symbols.map((s) => {
+                        return s.symbol;
+                    });
+
+                    responseSymbols =_.uniq(responseSymbols);
+
+                    res.send(responseSymbols);
+                } else {
+                    res.status(404).send('resource not found');
+                }
+            });
+    };
+
     let updateStockInformation = (req, res) => {
         Promise.all([
             populateStocks(nasdaqStocksUrl, 'NasdaqNM'),
@@ -89,6 +106,8 @@ let udfController = (
         });
     };
 
+    // Execute this Locally, it will hit a n endpoint hosted in heroku api/udf/updateStocksFromCollectionHeroku
+    // which will trigger updateStocksHeroku
     let updateStockInformationHeroku = (req, res) => {
 
         Stock.find()
@@ -132,7 +151,7 @@ let udfController = (
     };
 
 
-
+    //Hosted in Heroku executed by updateStockInformationHeroku
     let updateStocksHeroku = (req, res) => {
         let stocks = req.body.params.map((stock) => {
             return new Stock({
@@ -314,6 +333,7 @@ let udfController = (
     return {
         getHistory,
         getSymbols,
+        getAllSymbols,
         updateStockInformation,
         updateStockInformationHeroku,
         updateStocksHeroku

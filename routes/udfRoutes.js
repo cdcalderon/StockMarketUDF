@@ -39,6 +39,9 @@ let routes = function(Stock){
     udfRouter.route('/symbols')
         .get(udfController.getSymbols);
 
+    udfRouter.route('/allsymbols')
+        .get(udfController.getAllSymbols);
+
     udfRouter.route('/updateStocks')
         .get(udfController.updateStockInformation);
 
