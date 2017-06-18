@@ -20,11 +20,13 @@ let udfController = (
     //https://github.com/tradingview/yahoo_datafeed/blob/master/yahoo.js
      let getHistory = (req, res) => {
 
-             let symbol = req.query.symbol;
-             let resolution = req.query.resolution;
+         let symbol = req.query.symbol;
+         let resolution = req.query.resolution;
 
-             let startDateTimestamp = moment.unix(req.query.from).format("MM/DD/YYYY");
-             let endDateTimestamp = moment.unix(req.query.to).format("MM/DD/YYYY");
+             // let startDateTimestamp = moment.unix(req.query.from).format("MM/DD/YYYY");
+             // let endDateTimestamp = moment.unix(req.query.to).format("MM/DD/YYYY");
+         let startDateTimestamp = new Date(req.query.from * 1000);
+         let endDateTimestamp = new Date(req.query.to * 1000);
          if(symbol != null && startDateTimestamp != null && endDateTimestamp != null) {
              quotes.getHistoricalQuotes(symbol, startDateTimestamp, endDateTimestamp)
                  .then((fullQuotes) => {
@@ -189,7 +191,7 @@ let udfController = (
                 console.log(csvRow);
                 let symbol = csvRow[0] != null ? csvRow[0].trim(): 'N/A';
 
-                if(symbol.toLowerCase() == 'more'){
+                if(symbol.toLowerCase() ==='more'){
                     console.log(symbol);
                 }
                 Stock.find({symbol: symbol})
@@ -239,8 +241,11 @@ let udfController = (
 
     let convertYahooHistoryToUDFFormat = (data) => {
         return {
+            // t: _.pluck(data, 'date').map((date) => {
+            //     return parseDate(moment(date).format("YYYY-MM-DD")) / 1000;
+            // }),
             t: _.pluck(data, 'date').map((date) => {
-                return parseDate(moment(date).format("YYYY-MM-DD")) / 1000;
+                return new Date(date) / 1000;
             }),
             c: _.pluck(data, 'close'),
             o: _.pluck(data, 'open'),
