@@ -93,6 +93,33 @@ let udfController = (
             });
     };
 
+    let getAllStocksFull = (req, res) => {
+        Stock.find()
+            .then((symbols) => {
+                if (symbols != null) {
+                    let responseSymbols = symbols.map((s) => {
+                        return {
+                            symbol: s.symbol,
+                            exchange: s.exchange,
+                            summaryQuoteUrl: s.summaryQuoteUrl,
+                            industry: s.industry,
+                            sector: s.sector,
+                            name: s.name
+                        };
+                    });
+
+                    responseSymbols =_.uniq(responseSymbols);
+
+                    res.send(responseSymbols);
+                } else {
+                    res.status(404).send('resource not found');
+                }
+            });
+    };
+
+    // Populate StockmInformation locally, I need this since reading from nasdaq csv files is not working from Heroku,
+    // so I need to store all  symbols in my local Db and then execute updateStockInformationHeroku locally which will post
+    // to axios.post(`${herokuUDFBaseUrl}/api/udf/updateStocksFromCollectionHeroku`
     let updateStockInformation = (req, res) => {
         Promise.all([
             populateStocks(nasdaqStocksUrl, 'NasdaqNM'),
@@ -336,7 +363,8 @@ let udfController = (
         getAllSymbols,
         updateStockInformation,
         updateStockInformationHeroku,
-        updateStocksHeroku
+        updateStocksHeroku,
+        getAllStocksFull
     }
 
 };
