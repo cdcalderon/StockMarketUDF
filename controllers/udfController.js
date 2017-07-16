@@ -93,6 +93,21 @@ let udfController = (
             });
     };
 
+    let getSymbolsPartial = (req, res) => {
+        let part = req.query.part;
+        Stock.find({ "symbol": { "$regex": part, "$options": "i" } })
+            .then((symbols) => {
+                if (symbols != null) {
+                    symbols.map((s) => {
+                        return s.symbol;
+                    });
+                    res.send(symbols);
+                } else {
+                    res.status(404).send('resource not found');
+                }
+            });
+    };
+
     let getAllStocksFull = (req, res) => {
         Stock.find()
             .then((symbols) => {
@@ -364,7 +379,9 @@ let udfController = (
         updateStockInformation,
         updateStockInformationHeroku,
         updateStocksHeroku,
-        getAllStocksFull
+        getAllStocksFull,
+        getSymbolsPartial
+
     }
 
 };

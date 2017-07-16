@@ -42,6 +42,9 @@ let routes = function(Stock){
     udfRouter.route('/allsymbols')
         .get(udfController.getAllSymbols);
 
+    udfRouter.route('/symbolspartial')
+        .get(udfController.getSymbolsPartial);
+
     udfRouter.route('/allstocksfull')
         .get(udfController.getAllStocksFull);
 
