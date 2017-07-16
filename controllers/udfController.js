@@ -98,7 +98,7 @@ let udfController = (
         Stock.find({ "symbol": { "$regex": part, "$options": "i" } })
             .then((symbols) => {
                 if (symbols != null) {
-                    symbols.map((s) => {
+                    symbols = symbols.map((s) => {
                         return s.symbol;
                     });
                     res.send(symbols);
