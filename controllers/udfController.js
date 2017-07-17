@@ -162,6 +162,7 @@ let udfController = (
                         name: stock._doc.name,
                         lastSale: stock._doc.lastSale,
                         marketCap: stock._doc.marketCap,
+                        marketCapNumberic: getMarketCapNumeric(csvRow[3]),
                         ipoYear: stock._doc.ipoYear,
                         sector: stock._doc.sector,
                         industry: stock._doc.industry,
@@ -201,6 +202,7 @@ let udfController = (
                 name: stock.name,
                 lastSale: stock.lastSale,
                 marketCap: stock.marketCap,
+                marketCapNumberic: getMarketCapNumeric(csvRow[3]),
                 ipoYear: stock.ipoYear,
                 sector: stock.sector,
                 industry: stock.industry,
@@ -267,6 +269,7 @@ let udfController = (
                                 name: csvRow[1],
                                 lastSale: csvRow[2],
                                 marketCap: csvRow[3],
+                                marketCapNumberic: getMarketCapNumeric(csvRow[3]),
                                 ipoYear: csvRow[4],
                                 sector: csvRow[5],
                                 industry: csvRow[6],
@@ -298,6 +301,19 @@ let udfController = (
     let parseDate = (input) => {
         let parts = input.split('-');
         return Date.UTC(parts[0], parts[1]-1, parts[2]);
+    };
+
+    let getMarketCapNumeric = (marketCapString) => {
+        let result = null;
+        let sizeIdentifier = marketCapString.slice(-1);
+        let digits = parseFloat(marketCapString.substring(1, marketCapString.length-1));
+
+        if(sizeIdentifier === 'M') {
+            result = digits * 1000000;
+        } else if(sizeIdentifier === 'B') {
+            result = digits * 1000000000;
+        }
+        return result;
     };
 
     let convertYahooHistoryToUDFFormat = (data) => {

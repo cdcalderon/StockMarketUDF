@@ -21,6 +21,10 @@ let Stock = mongoose.model('Stock', {
         type: String,
         default: null
     },
+    marketCapNumberic: {
+        type: Number,
+        default: null
+    },
     ipoYear: {
         type: String,
         default: null
