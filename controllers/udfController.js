@@ -119,7 +119,9 @@ let udfController = (
                             summaryQuoteUrl: s.summaryQuoteUrl,
                             industry: s.industry,
                             sector: s.sector,
-                            name: s.name
+                            name: s.name,
+                            marketCap: s.marketCap,
+                            marketCapNumeric: s.marketCapNumberic
                         };
                     });
 
@@ -254,9 +256,6 @@ let udfController = (
                 console.log(csvRow);
                 let symbol = csvRow[0] != null ? csvRow[0].trim(): 'N/A';
 
-                if(symbol.toLowerCase() ==='more'){
-                    console.log(symbol);
-                }
                 Stock.find({symbol: symbol})
                     .count()
                     .then((count) => {
