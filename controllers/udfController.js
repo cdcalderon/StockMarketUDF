@@ -164,7 +164,7 @@ let udfController = (
                         name: stock._doc.name,
                         lastSale: stock._doc.lastSale,
                         marketCap: stock._doc.marketCap,
-                        marketCapNumberic: getMarketCapNumeric(csvRow[3]),
+                        marketCapNumberic: stock._doc.marketCapNumberic,
                         ipoYear: stock._doc.ipoYear,
                         sector: stock._doc.sector,
                         industry: stock._doc.industry,
