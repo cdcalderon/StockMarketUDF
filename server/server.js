@@ -8,7 +8,6 @@ const port = process.env.PORT || 4600;
 
 const {Stock} = require('../models/stock');
 
-
 app.use(cors());
 app.use(bodyParser.urlencoded({
     parameterLimit: 100000,

@@ -134,7 +134,7 @@ let udfController = (
             });
     };
 
-    // Populate StockmInformation locally, I need this since reading from nasdaq csv files is not working from Heroku,
+    // Populate StockInformation locally, I need this since reading from nasdaq csv files is not working from Heroku,
     // so I need to store all  symbols in my local Db and then execute updateStockInformationHeroku locally which will post
     // to axios.post(`${herokuUDFBaseUrl}/api/udf/updateStocksFromCollectionHeroku`
     let updateStockInformation = (req, res) => {
@@ -150,7 +150,7 @@ let udfController = (
         });
     };
 
-    // Execute this Locally, it will hit a n endpoint hosted in heroku api/udf/updateStocksFromCollectionHeroku
+    // Execute this Locally, it will hit an endpoint hosted in heroku api/udf/updateStocksFromCollectionHeroku
     // which will trigger updateStocksHeroku
     let updateStockInformationHeroku = (req, res) => {
 
@@ -204,7 +204,7 @@ let udfController = (
                 name: stock.name,
                 lastSale: stock.lastSale,
                 marketCap: stock.marketCap,
-                marketCapNumberic: getMarketCapNumeric(csvRow[3]),
+                marketCapNumberic: stock.marketCapNumberic,
                 ipoYear: stock.ipoYear,
                 sector: stock.sector,
                 industry: stock.industry,

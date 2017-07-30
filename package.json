@@ -9,7 +9,7 @@
     "test-watch": "nodemon --exec 'npm test'",
     "startlocal": "npm-run-all --parallel open:src lint:watch",
     "open:src": "node server/server.js",
-    "lint": "esw playground --color",
+    "lint": "esw playground server routes controllers common models  --color",
     "lint:watch": "npm run lint -- --watch"
   },
   "engines": {
