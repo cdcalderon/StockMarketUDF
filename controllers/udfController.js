@@ -14,7 +14,7 @@ let udfController = (
     quotes,
     symbolsDB) => {
 
-    const symbolsQuotesUrl  = 'https://demo_feed.tradingview.com/symbols';
+   // const symbolsQuotesUrl  = 'https://demo_feed.tradingview.com/symbols';
 
     //Implement new yahoo UDP quotes service
     //https://github.com/tradingview/yahoo_datafeed/blob/master/yahoo.js
@@ -31,7 +31,7 @@ let udfController = (
              quotes.getHistoricalQuotes(symbol, startDateTimestamp, endDateTimestamp)
                  .then((fullQuotes) => {
 
-                     let quotes = convertYahooHistoryToUDFFormat(fullQuotes);
+                     let quotes = convertHistoryToUDFFormat(fullQuotes);
                      res.send(quotes);
                  })
                  .catch((error) => {
@@ -315,7 +315,7 @@ let udfController = (
         return result;
     };
 
-    let convertYahooHistoryToUDFFormat = (data) => {
+    let convertHistoryToUDFFormat = (data) => {
         return {
             // t: _.pluck(data, 'date').map((date) => {
             //     return parseDate(moment(date).format("YYYY-MM-DD")) / 1000;
