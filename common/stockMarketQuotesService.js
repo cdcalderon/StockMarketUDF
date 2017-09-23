@@ -48,7 +48,8 @@ let getHistoricalQuotesQuand = (symbol, from, to) => {
     //     sendResult(content);
     // });
 };
-//TODO: Move private method to new file
+
+//TODO: Move private method to new file Refactor
 let formatQuandQuotes = (quotes) => {
     if(isQuand(quotes)) {
         return quotes.data.dataset.data.map((q) => {
