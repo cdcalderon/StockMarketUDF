@@ -9,6 +9,8 @@ const axios = require('axios');
 //http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=amex&render=download
 
 
+
+
 let getQuoteSnapshot = (symbol, fields) => {
     yahooFinance.snapshot({
         symbol: symbol,
