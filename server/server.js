@@ -19,6 +19,9 @@ app.use(bodyParser.json());
 const udfRouter = require('../routes/udfRoutes')(Stock);
 app.use('/api/udf', udfRouter);
 
+const securitiesRouter = require('../routes/securitiesRoutes')(Stock);
+app.use('/api/securities', securitiesRouter);
+
 app.listen(port, () => {
     console.log(`Started up at port ${port}`)
 });
