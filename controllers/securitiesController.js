@@ -6,9 +6,13 @@ let securityController = (Stock) => {
         let query = filterComposer.getFilterQuery(req.body);
 
         Stock.find(query.filterQuery)
-            .then((gaps => {
-                console.log(gaps);
-                res.send("OK");
+            .then((securities => {
+                console.log(securities);
+
+                securities = securities.map((s) => {
+                    return {symbol: s.symbol};
+                });
+                res.send(securities);
             }));
     };
 
