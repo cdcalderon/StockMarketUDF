@@ -66,13 +66,30 @@ let formatQuandQuotes = (quotes) => {
     }
 };
 
+
+
 let getHistoricalQuotes = (symbol, from, to)=> {
-    return yahooFinance.historical({
+    let getHistoricalQuotesYahoo = (symbol, from, to)=> {
+        console.log("Reading------------------------------ Yahoo Quotes");
+        return yahooFinance.historical({
             symbol: symbol,
             from: from,
             to: to,
             // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
         });
+    };
+
+    return  getHistoricalQuotesYahoo(symbol, from, to).then((yQuotes) => {
+        return new Promise((resolve, reject) => {
+            if(yQuotes) {
+                resolve(yQuotes.reverse()); //order is important, so make sure is sorted from less to greater
+            } else{
+                reject('Error : could not find any quotes');
+            }
+        });
+
+    });
+
     // return getHistoricalQuotesQuand(symbol,from,to).then((quotes) => {
     //     if(isQuand(quotes) && quotes.data.dataset.data.length > 0) {
     //         return new Promise((resolve) => {
@@ -107,6 +124,7 @@ let getHistoricalQuotes = (symbol, from, to)=> {
     //         to: to
     //     });
     //
+    //
     //     // return yahooFinance.historical({
     //     //     symbol: symbol,
     //     //     from: from,
@@ -114,19 +132,19 @@ let getHistoricalQuotes = (symbol, from, to)=> {
     //     //     // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
     //     // });
     // };
-    //
-    // // return googleFinance.historical({
-    // //     symbol: symbol,
-    // //     from: from,
-    // //     to: to
-    // // });
-    //
-    // // return yahooFinance.historical({
-    // //     symbol: symbol,
-    // //     from: from,
-    // //     to: to,
-    // //     // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
-    // // });
+
+    // return googleFinance.historical({
+    //     symbol: symbol,
+    //     from: from,
+    //     to: to
+    // });
+
+    // return yahooFinance.historical({
+    //     symbol: symbol,
+    //     from: from,
+    //     to: to,
+    //     // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
+    // });
 };
 
 module.exports = {

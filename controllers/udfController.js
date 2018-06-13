@@ -316,8 +316,11 @@ let udfController = (
     };
 
     let convertHistoryToUDFFormat = (data) => {
-        return {
-            // t: _.pluck(data, 'date').map((date) => {
+        data = data.map((o) => {
+            return Object.assign(o, {date:moment(o.date).format("YYYY-MM-DD"), datetest: o.date})
+        });
+        return { // TODO: Fix universal format for any quote service
+            // t: _.pluck(data, 'date').map((date) => {  //yahoo date format
             //     return parseDate(moment(date).format("YYYY-MM-DD")) / 1000;
             // }),
             t: _.pluck(data, 'date').map((date) => {
@@ -328,7 +331,8 @@ let udfController = (
             h: _.pluck(data, 'high'),
             l: _.pluck(data, 'low'),
             v: _.pluck(data, 'volume'),
-            s: 'ok'
+            s: 'ok',
+            t2: _.pluck(data, 'datetest'),
         };
     };
 
