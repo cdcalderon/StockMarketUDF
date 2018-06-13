@@ -67,61 +67,66 @@ let formatQuandQuotes = (quotes) => {
 };
 
 let getHistoricalQuotes = (symbol, from, to)=> {
-
-    return getHistoricalQuotesQuand(symbol,from,to).then((quotes) => {
-        if(isQuand(quotes) && quotes.data.dataset.data.length > 0) {
-            return new Promise((resolve) => {
-                resolve(formatQuandQuotes(quotes));
-            });
-        } else {
-            return getHistoricalQuotesGoogle(symbol, from, to).then((gQuotes) => {
-                if(gQuotes && gQuotes.length > 0) {
-                    return new Promise((resolve) => {
-                        resolve(gQuotes);
-                    });
-                }
-            })
-        }
-    }, (error) => {
-        if(error) {
-            return getHistoricalQuotesGoogle(symbol, from, to).then((gQuotes) => {
-                if(gQuotes) {
-                    return new Promise((resolve) => {
-                        resolve(gQuotes);
-                    });
-                }
-            })
-        }
-    });
-
-    let getHistoricalQuotesGoogle = (symbol, from, to)=> {
-        console.log("Reading------------------------------ Google Quotes");
-        return googleFinance.historical({
+    return yahooFinance.historical({
             symbol: symbol,
             from: from,
-            to: to
+            to: to,
+            // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
         });
-
-        // return yahooFinance.historical({
-        //     symbol: symbol,
-        //     from: from,
-        //     to: to,
-        //     // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
-        // });
-    };
-
-    // return googleFinance.historical({
-    //     symbol: symbol,
-    //     from: from,
-    //     to: to
+    // return getHistoricalQuotesQuand(symbol,from,to).then((quotes) => {
+    //     if(isQuand(quotes) && quotes.data.dataset.data.length > 0) {
+    //         return new Promise((resolve) => {
+    //             resolve(formatQuandQuotes(quotes));
+    //         });
+    //     } else {
+    //         return getHistoricalQuotesGoogle(symbol, from, to).then((gQuotes) => {
+    //             if(gQuotes && gQuotes.length > 0) {
+    //                 return new Promise((resolve) => {
+    //                     resolve(gQuotes);
+    //                 });
+    //             }
+    //         })
+    //     }
+    // }, (error) => {
+    //     if(error) {
+    //         return getHistoricalQuotesGoogle(symbol, from, to).then((gQuotes) => {
+    //             if(gQuotes) {
+    //                 return new Promise((resolve) => {
+    //                     resolve(gQuotes);
+    //                 });
+    //             }
+    //         })
+    //     }
     // });
-
-    // return yahooFinance.historical({
-    //     symbol: symbol,
-    //     from: from,
-    //     to: to,
-    //     // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
-    // });
+    //
+    // let getHistoricalQuotesGoogle = (symbol, from, to)=> {
+    //     console.log("Reading------------------------------ Google Quotes");
+    //     return googleFinance.historical({
+    //         symbol: symbol,
+    //         from: from,
+    //         to: to
+    //     });
+    //
+    //     // return yahooFinance.historical({
+    //     //     symbol: symbol,
+    //     //     from: from,
+    //     //     to: to,
+    //     //     // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
+    //     // });
+    // };
+    //
+    // // return googleFinance.historical({
+    // //     symbol: symbol,
+    // //     from: from,
+    // //     to: to
+    // // });
+    //
+    // // return yahooFinance.historical({
+    // //     symbol: symbol,
+    // //     from: from,
+    // //     to: to,
+    // //     // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
+    // // });
 };
 
 module.exports = {
